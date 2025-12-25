@@ -1,4 +1,4 @@
-#include "ros2_odometry_node/odometry_parameters.hpp"
+#include "utils/odometry_parameters.hpp"
 
 OdometryParameters::OdometryParameters(rclcpp::Node* node) : node_(node) {
 

@@ -1,4 +1,4 @@
-#include "ros2_odometry_node/mecanum_kinematics.hpp"
+#include "mecanum/mecanum_kinematics.hpp"
 #include <cmath>
 
 MecanumKinematics::MecanumKinematics() {

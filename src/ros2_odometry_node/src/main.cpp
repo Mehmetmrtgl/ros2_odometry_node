@@ -1,5 +1,5 @@
 #include "rclcpp/rclcpp.hpp"
-#include "ros2_odometry_node/odometry_node.hpp"
+#include "core/odometry_node.hpp"
 
 int main(int argc, char **argv) {
     rclcpp::init(argc, argv);

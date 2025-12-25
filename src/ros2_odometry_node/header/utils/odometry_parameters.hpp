@@ -3,7 +3,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "ros2_odometry_node/enums.hpp"
-#include "ros2_odometry_node/mecanum_data.hpp"
+#include "mecanum/mecanum_data.hpp"
 #include <string>
 
 class OdometryParameters {

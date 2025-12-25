@@ -14,20 +14,21 @@ find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 
-include_directories(include)
+include_directories(include header)
 
-# İki kaynak dosyayı da ekliyoruz (Mantık + ROS Wrapper)
 add_executable(ros2_odometry_node
   src/main.cpp
   src/odometry_node.cpp
-  src/odometry_parameters.cpp
   
-  src/mecanum_kinematics.cpp
-  src/mecanum_impl.cpp
+  src/utils/odometry_parameters.cpp
   
-  src/ackermann_kinematics.cpp
-  src/ackermann_impl.cpp
+  src/mecanum/mecanum_kinematics.cpp
+  src/mecanum/mecanum_impl.cpp
+  
+  src/ackermann/ackermann_kinematics.cpp
+  src/ackermann/ackermann_impl.cpp
 )
+
 target_include_directories(ros2_odometry_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
@@ -45,8 +46,8 @@ ament_target_dependencies(ros2_odometry_node
 install(TARGETS ros2_odometry_node
   DESTINATION lib/${PROJECT_NAME})
 
-install(DIRECTORY include/
-  DESTINATION include)
+install(DIRECTORY header include 
+  DESTINATION share/${PROJECT_NAME})
 
 install(DIRECTORY config
   DESTINATION share/${PROJECT_NAME}

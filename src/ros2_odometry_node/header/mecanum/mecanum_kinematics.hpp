@@ -2,7 +2,7 @@
 #define MECANUM_KINEMATICS_HPP_
 
 #include "ros2_odometry_node/robot_state.hpp"   
-#include "ros2_odometry_node/mecanum_data.hpp"  
+#include "mecanum/mecanum_data.hpp"  
 #include <cmath>
 
 class MecanumKinematics {

@@ -6,8 +6,8 @@
 #include "nav_msgs/msg/odometry.hpp"
 
 #include "ros2_odometry_node/vehicle_interface.hpp"
-#include "ros2_odometry_node/ackermann_kinematics.hpp"
-#include "ros2_odometry_node/ackermann_data.hpp"
+#include "ackermann/ackermann_kinematics.hpp"
+#include "ackermann/ackermann_data.hpp"
 
 class AckermannImpl : public VehicleInterface {
 public:

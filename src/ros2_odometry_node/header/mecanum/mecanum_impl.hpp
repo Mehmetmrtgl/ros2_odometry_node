@@ -2,8 +2,8 @@
 #define MECANUM_IMPL_HPP_
 
 #include "ros2_odometry_node/vehicle_interface.hpp"
-#include "ros2_odometry_node/mecanum_kinematics.hpp"
-#include "ros2_odometry_node/mecanum_data.hpp"
+#include "mecanum/mecanum_kinematics.hpp"
+#include "mecanum/mecanum_data.hpp"
 #include "ros2_odometry_node/robot_state.hpp"
 #include "std_msgs/msg/float32_multi_array.hpp"
 #include "nav_msgs/msg/odometry.hpp"

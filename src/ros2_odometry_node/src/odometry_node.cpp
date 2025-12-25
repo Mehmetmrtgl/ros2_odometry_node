@@ -11,7 +11,7 @@ OdometryNode::OdometryNode() : Node("ros2_odometry_node") {
         vehicle_impl_ = std::make_unique<MecanumImpl>(this);
     } 
     else if (type == "ACKERMANN") { 
-
+        vehicle_impl_ = std::make_unique<AckermannImpl>(this);
     }
     else {
         RCLCPP_ERROR(this->get_logger(), "unknow: %s", type.c_str());

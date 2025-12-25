@@ -1,0 +1,5 @@
+ros2_odometry_node:
+  ros__parameters:
+
+    drive_type: "ACKERMANN" 
+    publish_tf: true

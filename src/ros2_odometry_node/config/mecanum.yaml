@@ -1,0 +1,9 @@
+ros2_odometry_node:
+  ros__parameters:
+
+    mecanum:
+      ticks_per_rev: 4200.0
+      wheel_radius: 0.04
+      robot_l: 0.20
+      robot_w: 0.23
+      angle_epsilon: 0.0001

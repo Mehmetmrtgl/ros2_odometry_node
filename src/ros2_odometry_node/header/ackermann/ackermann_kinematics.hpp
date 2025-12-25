@@ -7,9 +7,20 @@
 
 class AckermannKinematics {
 public:
+    AckermannKinematics();
+    void setConfig(const AckermannParameters& params);
+
+    void update(const AckermannStateData& inputs, double dt);
+
+    RobotState getState() const;
 
 private:
+    RobotState state_;
+    AckermannParameters params_;
 
+    double prev_left_ticks_;
+    double prev_right_ticks_;
+    bool first_run_; 
 };
 
 #endif

@@ -20,9 +20,13 @@ include_directories(include)
 add_executable(ros2_odometry_node
   src/main.cpp
   src/odometry_node.cpp
-  src/mecanum_kinematics.cpp  # Kinematik hesaplama
-  src/mecanum_impl.cpp        # <--- EKSİK OLAN BU (Mecanum Mantığı)
-  # src/ackermann_impl.cpp      # <--- BUNU DA EKLE (Ackermann Mantığı)
+  src/odometry_parameters.cpp
+  
+  src/mecanum_kinematics.cpp
+  src/mecanum_impl.cpp
+  
+  src/ackermann_kinematics.cpp
+  src/ackermann_impl.cpp
 )
 target_include_directories(ros2_odometry_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

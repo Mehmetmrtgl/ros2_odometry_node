@@ -17,8 +17,10 @@ void AckermannImpl::setup() {
     OdometryParameters param_handler(node_);
     AckermannParameters params = param_handler.getAckermannParams();
     kinematics_.setConfig(params);
+    
 
     pub_odom_ = node_->create_publisher<nav_msgs::msg::Odometry>("/odom", 10);
+    RCLCPP_INFO(node_->get_logger(), "Publisher created");
 
     sub_encoder_ = node_->create_subscription<irp_sen_msgs::msg::Encoder>(
         "/encoder_count", 10, std::bind(&AckermannImpl::cb_encoder, this, _1));
@@ -48,6 +50,7 @@ void AckermannImpl::cb_encoder(const irp_sen_msgs::msg::Encoder::SharedPtr msg) 
         return; 
     }
 
+    RCLCPP_INFO(node_->get_logger(), "callback");
 
     process_and_publish(dt);
 }
@@ -82,6 +85,8 @@ void AckermannImpl::publish_state(const RobotState& state) {
 
     odom_msg.twist.twist.linear.x = state.velocity.vx;
     odom_msg.twist.twist.angular.z = state.velocity.omega;
+
+    RCLCPP_INFO(node_->get_logger(), "publishing: /odom");
 
     pub_odom_->publish(odom_msg);
 }

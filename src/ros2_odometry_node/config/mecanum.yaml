@@ -1,6 +1,5 @@
 ros2_odometry_node:
   ros__parameters:
-
     mecanum:
       ticks_per_rev: 4200.0
       wheel_radius: 0.04

@@ -3,8 +3,11 @@
 
 int main(int argc, char **argv) {
     rclcpp::init(argc, argv);
+
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), ">>> Main: Program started.");
     auto node = std::make_shared<OdometryNode>();
-    rclcpp::spin(node);
+
+    RCLCPP_INFO(node->get_logger(), ">>> Main: Node created, starting spin.");    rclcpp::spin(node);
     rclcpp::shutdown();
     return 0;
 }

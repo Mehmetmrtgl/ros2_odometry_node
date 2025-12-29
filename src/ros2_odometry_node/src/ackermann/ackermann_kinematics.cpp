@@ -4,7 +4,9 @@
 #include <cstdint> 
 
 AckermannKinematics::AckermannKinematics() {
-    state_.pose = {0.0, 0.0, 0.0};
+    // BAŞLANGIÇ DURUMU: (x, y, theta)
+    // Robotu 180 derece (M_PI) döndürerek başlatıyoruz
+    state_.pose = {0.0, 0.0, M_PI}; 
     state_.velocity = {0.0, 0.0, 0.0};
     
     prev_left_ticks_ = 0;
@@ -17,20 +19,7 @@ void AckermannKinematics::setConfig(const AckermannParameters& params) {
 }
 
 void AckermannKinematics::update(const AckermannStateData& inputs, double dt) {
-    
-    // RCLCPP_INFO(rclcpp::get_logger("AckermannKinematics"), "Delta time: %.6f", dt);
-    // The Kaist Urban dataset prints the encoder_count topic at 100 Hz, which is equivalent to 10 ms.
-    // The output of RCLCPP_INFO confirms this calculation.
-
-    // Using %ld for 64-bit integer logging to match raw topic values perfectly
-    RCLCPP_INFO(rclcpp::get_logger("AckermannKinematics"), 
-                    "RAW TICKS -> Left: %ld, Right: %ld", 
-                    inputs.left_ticks, 
-                    inputs.right_ticks);
-
-    if (dt < 0.0001) {
-        return;
-    }
+    if (dt < 0.0001) return;
 
     if (first_run_) {
         prev_left_ticks_ = inputs.left_ticks;
@@ -39,16 +28,11 @@ void AckermannKinematics::update(const AckermannStateData& inputs, double dt) {
         return;
     }
 
-    // Integer subtraction to avoid precision errors with large tick values
     int64_t current_left_ticks = inputs.left_ticks;
     int64_t current_right_ticks = inputs.right_ticks;
 
     int64_t delta_left_ticks = current_left_ticks - prev_left_ticks_;
     int64_t delta_right_ticks = current_right_ticks - prev_right_ticks_;
-    
-    RCLCPP_INFO(rclcpp::get_logger("AckermannKinematics"), 
-                "DELTA TICKS -> Left: %ld, Right: %ld", 
-                delta_left_ticks, delta_right_ticks);
                 
     prev_left_ticks_ = current_left_ticks;
     prev_right_ticks_ = current_right_ticks;
@@ -58,19 +42,24 @@ void AckermannKinematics::update(const AckermannStateData& inputs, double dt) {
 
     float linear_v = (v_right + v_left) / 2.0f;
 
+    // Açısal hız (Sola dönüş pozitif olmalı)
     float angular_v = 0.0f;
     if (params_.wheelbase > 0.001) {
-        angular_v = (v_right - v_left) / params_.wheelbase;
+        // Eğer robot sola dönünce açı azalıyorsa v_left - v_right yapın
+        angular_v = (v_right - v_left) / params_.wheelbase; 
     }
 
-    float dx = linear_v * std::cos(state_.pose.theta) * dt;
-    float dy = linear_v * std::sin(state_.pose.theta) * dt;
     float dtheta = angular_v * dt;
+    float avg_theta = state_.pose.theta + (dtheta / 2.0f);
+
+    float dx = linear_v * std::cos(avg_theta) * dt;
+    float dy = linear_v * std::sin(avg_theta) * dt;
 
     state_.pose.x += dx;
     state_.pose.y += dy;
     state_.pose.theta += dtheta;
 
+    // Normalizasyon [-PI, PI]
     state_.pose.theta = std::atan2(std::sin(state_.pose.theta), std::cos(state_.pose.theta));
 
     state_.velocity.vx = linear_v;

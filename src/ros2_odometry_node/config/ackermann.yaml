@@ -1,6 +1,5 @@
 ros2_odometry_node:
   ros__parameters:
-    drive_type: "ACKERMANN"
     ackermann:
       wheelbase: 1.52439
       ticks_per_rev: 4096.0

@@ -6,19 +6,18 @@
 using std::placeholders::_1;
 
 AckermannImpl::AckermannImpl(rclcpp::Node* node) : node_(node) {
-    data_.left_ticks = 0.0;
-    data_.right_ticks = 0.0;
+    data_.left_ticks = 0;
+    data_.right_ticks = 0;
     first_measurement_ = true;
 }
 
 void AckermannImpl::setup() {
-    RCLCPP_INFO(node_->get_logger(), "ACKERMANN Modu (KAIST irp_sen_msgs) started...");
+    RCLCPP_INFO(node_->get_logger(), "ACKERMANN Mode (KAIST irp_sen_msgs) started...");
 
     OdometryParameters param_handler(node_);
     AckermannParameters params = param_handler.getAckermannParams();
     kinematics_.setConfig(params);
     
-
     pub_odom_ = node_->create_publisher<nav_msgs::msg::Odometry>("/odom", 10);
     RCLCPP_INFO(node_->get_logger(), "Publisher created");
 
@@ -29,15 +28,26 @@ void AckermannImpl::setup() {
 }
 
 void AckermannImpl::cb_encoder(const irp_sen_msgs::msg::Encoder::SharedPtr msg) {
-
-    data_.left_ticks = static_cast<double>(msg->left_count);
-    data_.right_ticks = static_cast<double>(msg->right_count);
+    // Mesajdan gelen verileri doğrudan tam sayı olarak sakla
+    data_.left_ticks = msg->left_count;
+    data_.right_ticks = msg->right_count;
 
     rclcpp::Time msg_time(msg->header.stamp);
-    double dt = 0.05; 
+    
+    // Zaman bilgisini tam sayı olarak bas (Casting double to long)
+    RCLCPP_INFO(node_->get_logger(), 
+                "Message Time -> Sec: %ld, NanoSec: %ld", 
+                static_cast<long>(msg_time.seconds()), 
+                static_cast<long>(msg_time.nanoseconds() % 1000000000));
 
+    // Tick değerlerini tam sayı olarak bas (%ld: long int)
+    RCLCPP_INFO(node_->get_logger(), 
+                "Ticks -> L: %ld, R: %ld", 
+                data_.left_ticks, 
+                data_.right_ticks);
+
+    double dt = 0.01; 
     if (first_measurement_) {
-
         last_time_ = msg_time;
         first_measurement_ = false;
         return; 
@@ -46,29 +56,24 @@ void AckermannImpl::cb_encoder(const irp_sen_msgs::msg::Encoder::SharedPtr msg) 
         last_time_ = msg_time;
     }
 
-    if (dt <= 0.000001) {
-        return; 
-    }
+    if (dt <= 0.000001) return;
 
-    RCLCPP_INFO(node_->get_logger(), "callback");
-
-    process_and_publish(dt);
+    process_and_publish(dt, msg_time);
 }
 
-void AckermannImpl::process_and_publish(double dt) {
+void AckermannImpl::process_and_publish(double dt, rclcpp::Time stamp) {
 
     kinematics_.update(data_, dt);
     
+
     RobotState state = kinematics_.getState();
-    publish_state(state);
+    publish_state(state, stamp);
 }
 
-void AckermannImpl::publish_state(const RobotState& state) {
-
-    auto now = node_->get_clock()->now();
+void AckermannImpl::publish_state(const RobotState& state, rclcpp::Time stamp) {
 
     nav_msgs::msg::Odometry odom_msg;
-    odom_msg.header.stamp = now;
+    odom_msg.header.stamp = stamp; 
     odom_msg.header.frame_id = "odom";
     odom_msg.child_frame_id = "base_link";
 
@@ -86,7 +91,7 @@ void AckermannImpl::publish_state(const RobotState& state) {
     odom_msg.twist.twist.linear.x = state.velocity.vx;
     odom_msg.twist.twist.angular.z = state.velocity.omega;
 
-    RCLCPP_INFO(node_->get_logger(), "publishing: /odom");
+    // RCLCPP_INFO(node_->get_logger(), "Publishing /odom at x: %.2f, y: %.2f", state.pose.x, state.pose.y);
 
     pub_odom_->publish(odom_msg);
 }

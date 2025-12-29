@@ -1,9 +1,9 @@
 #ifndef ACKERMANN_DATA_HPP_
 #define ACKERMANN_DATA_HPP_
-
+#include <cstdint>
 struct AckermannStateData {
-    float left_ticks;  
-    float right_ticks; 
+    int64_t left_ticks;  
+    int64_t right_ticks; 
 };
 
 struct AckermannParameters {    

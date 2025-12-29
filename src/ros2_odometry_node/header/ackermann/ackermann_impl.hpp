@@ -32,8 +32,8 @@ private:
 
     void cb_encoder(const irp_sen_msgs::msg::Encoder::SharedPtr msg);
     
-    void process_and_publish(double dt);    
-    void publish_state(const RobotState& state);
+void process_and_publish(double dt, rclcpp::Time stamp);
+void publish_state(const RobotState& state, rclcpp::Time stamp);
 };
 
 #endif // ACKERMANN_IMPL_HPP_
